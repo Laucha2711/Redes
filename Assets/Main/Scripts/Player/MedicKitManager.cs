@@ -23,10 +23,13 @@ public class MedicKitManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.Q) && !c1.ColaVacia())
+        if (lm.currentLife <= 2)
         {
-            ApplyMedicKit();
-            c1.Desacolar();
+            if (Input.GetKeyDown(KeyCode.Q) && !c1.ColaVacia())
+            {
+                ApplyMedicKit();
+                c1.Desacolar();
+            }
         }
     }
 }

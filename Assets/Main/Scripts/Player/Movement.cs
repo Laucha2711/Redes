@@ -19,14 +19,18 @@ public class Movement : MonoBehaviour
     private Vector3 moveDirection = Vector3.zero;
     private float rotationX = 0;
     private CharacterController characterController;
+    private LifeManager lm;
 
     private bool canMove = true;
+
+    private GameObject blindaje;
 
     void Start()
     {
         characterController = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        lm = gameObject.GetComponent<LifeManager>();
     }
 
     void Update()
@@ -77,5 +81,24 @@ public class Movement : MonoBehaviour
             playerCamera.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
             transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
         }
+    }
+    
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Armor")
+        {
+            if (lm.currentLife <= 5)
+            {
+                Debug.Log("gotArmor");
+                blindaje = other.gameObject;
+                GotArmor();
+                Destroy(blindaje.gameObject);
+            }
+        }
+    }
+
+    public void GotArmor()
+    {
+        lm.currentLife = 6;
     }
 }

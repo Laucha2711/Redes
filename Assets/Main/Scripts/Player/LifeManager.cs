@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class LifeManager : MonoBehaviour
 {
-    [SerializeField]
-    int maxLife = 3;
-    int currentLife;
+    public int maxLife = 3;
+    public int currentLife;
 
     [SerializeField]
     private GameManager GM;
