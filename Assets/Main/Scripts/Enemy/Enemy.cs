@@ -26,6 +26,7 @@ public class Enemy : MonoBehaviour
 
     public void Dead()
     {
+        FindObjectOfType<GameManager>().SpawnItem(transform.position);
         GM.PointsUp();
         Destroy(gameObject);
     }

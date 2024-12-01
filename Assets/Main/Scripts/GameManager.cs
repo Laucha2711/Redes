@@ -12,6 +12,9 @@ public class GameManager : MonoBehaviour
     private int PointsToWin = 10;
     private int currentPoints;
 
+    public GameObject[] spawnItems;
+    public float[] spawnItemsChance;
+
     private void Awake()
     {
         currentPoints = 0;
@@ -50,6 +53,23 @@ public class GameManager : MonoBehaviour
         if (currentPoints >= PointsToWin)
         {
             WinGame();
+        }
+    }
+
+    public void SpawnItem(Vector3 enemyPos)
+    {
+        float x = Random.Range(0f, 100f);
+        float sum = 0f;
+
+        for (int i = 0; i <spawnItemsChance.Length; i++)
+        {
+            sum += spawnItemsChance[i];
+
+            if (x < sum)
+            {
+                Instantiate(spawnItems[i], enemyPos, spawnItems[i].transform.rotation);
+                break;
+            }
         }
     }
 }
