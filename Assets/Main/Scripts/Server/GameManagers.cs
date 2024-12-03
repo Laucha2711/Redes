@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using TMPro;
 using Photon.Realtime;
+using UnityEngine.SceneManagement;
 
 public class GameManagers : MonoBehaviourPunCallbacks
 {
@@ -26,6 +27,7 @@ public class GameManagers : MonoBehaviourPunCallbacks
     public void CreatePlayer(string namePlayer)
     {
         PhotonNetwork.NickName = namePlayer;
+        PlayerPrefs.SetString("PLayerName", namePlayer);
     }
 
 
@@ -67,6 +69,9 @@ public class GameManagers : MonoBehaviourPunCallbacks
     {
         base.OnJoinedRoom();
         Debug.Log("estamos conectados a la sala " +  PhotonNetwork.CurrentRoom.Name + " bienvenido " + PhotonNetwork.NickName);
+         
+
+        SceneManager.LoadScene("Menu"); 
     }
 
 }
