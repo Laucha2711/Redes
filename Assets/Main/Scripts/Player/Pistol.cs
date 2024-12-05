@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
-public class Pistol : MonoBehaviour
+public class Pistol : MonoBehaviourPunCallbacks
 {
     public Transform bulletSpawnPoint;
     public GameObject bulletPrefab;
@@ -10,10 +11,13 @@ public class Pistol : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (photonView.IsMine)
         {
-            var bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
-            bullet.GetComponent<Rigidbody>().velocity = bulletSpawnPoint.forward * bulletSpeed;
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                var bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
+                bullet.GetComponent<Rigidbody>().velocity = bulletSpawnPoint.forward * bulletSpeed;
+            }
         }
     }
 }
