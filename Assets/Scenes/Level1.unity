@@ -854,7 +854,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!65 &219392294
 BoxCollider:
@@ -1792,6 +1792,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1212582691074392162, guid: 1d8e8c055745e094a8efc15279fb3a54, type: 3}
+      propertyPath: sceneViewId
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1212582691074392162, guid: 1d8e8c055745e094a8efc15279fb3a54, type: 3}
+      propertyPath: ObservedComponents.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2173376570794561674, guid: 1d8e8c055745e094a8efc15279fb3a54, type: 3}
+      propertyPath: sceneViewId
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2173376570794561674, guid: 1d8e8c055745e094a8efc15279fb3a54, type: 3}
+      propertyPath: ObservedComponents.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2409528818025012683, guid: 1d8e8c055745e094a8efc15279fb3a54, type: 3}
       propertyPath: GM
       value: 

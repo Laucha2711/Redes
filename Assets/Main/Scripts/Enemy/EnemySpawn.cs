@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class EnemySpawn : MonoBehaviour
 {
@@ -12,12 +13,15 @@ public class EnemySpawn : MonoBehaviour
 
     private void Update()
     {
-        time = time - 1 * Time.deltaTime;
-
-        if (time <= 0)
+        if (PhotonNetwork.IsMasterClient == true)
         {
-            Instantiate(enemy, transform.position, Quaternion.identity);
-            time = 3;
+            time = time - 1 * Time.deltaTime;
+
+            if (time <= 0)
+            {
+                PhotonNetwork.Instantiate("enemy", transform.position, Quaternion.identity);
+                time = 3;
+            }
         }
     }
 }
