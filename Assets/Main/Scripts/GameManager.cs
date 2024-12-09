@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Photon.Pun;
 
 public class GameManager : MonoBehaviour
 {
@@ -31,7 +32,7 @@ public class GameManager : MonoBehaviour
     }
     public void LoseGame()
     {
-        SceneManager.LoadScene("Menu");
+        SceneManager.LoadScene("ConnectLobby");
         Debug.Log("ILose");
     }
 
@@ -67,7 +68,7 @@ public class GameManager : MonoBehaviour
 
             if (x < sum)
             {
-                Instantiate(spawnItems[i], enemyPos, spawnItems[i].transform.rotation);
+                PhotonNetwork.Instantiate(spawnItems[i].name.ToString(), enemyPos, spawnItems[i].transform.rotation);
                 break;
             }
         }

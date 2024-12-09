@@ -639,7 +639,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &190184962
 PrefabInstance:
@@ -2772,7 +2772,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1246031374
 MonoBehaviour:
@@ -3267,14 +3267,14 @@ MonoBehaviour:
   TimeToLose: 600
   PointsToWin: 10000000
   spawnItems:
-  - {fileID: 3074849320992220188, guid: a7e17d561cdb3824abc1c3372fb47fe7, type: 3}
   - {fileID: 8969962871705821187, guid: bc93e4d05eee9924b86ecf59db1c5949, type: 3}
+  - {fileID: 3074849320992220188, guid: a7e17d561cdb3824abc1c3372fb47fe7, type: 3}
   - {fileID: 7410403854700202498, guid: 886042843b61caa4b884d65e87da80d1, type: 3}
-  - {fileID: 1675952616}
+  - {fileID: 6958369910829675821, guid: 5306c234915b24f4c8c5413ae4d21386, type: 3}
   spawnItemsChance:
-  - 2
-  - 2
-  - 2
+  - 10
+  - 10
+  - 10
   - 94
 --- !u!4 &1625056584
 Transform:
@@ -3656,37 +3656,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5742352424383241315, guid: 9cb7004f3793d98489206cca6313fe56, type: 3}
   m_PrefabInstance: {fileID: 1672680524}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1675952616
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1675952617}
-  m_Layer: 0
-  m_Name: Null
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1675952617
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1675952616}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -18.919289, y: 4.422272, z: -7.6677036}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 9
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1683066261 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 906232786718989572, guid: 1be1a0c311eac2748b1887400a820e0d, type: 3}

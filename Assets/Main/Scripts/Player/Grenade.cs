@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
-public class Grenade : MonoBehaviour
+public class Grenade : MonoBehaviourPunCallbacks
 {
-    public GameObject explosionEffect;
+    public GameObject SmallExplosion;
     public float delay = 3f;
 
     public float explosionForce = 10f;
@@ -33,10 +34,14 @@ public class Grenade : MonoBehaviour
             }
         }
 
-        Instantiate(explosionEffect, transform.position, transform.rotation);
-        if (gameObject != null)
+        if (photonView.IsMine)
         {
-            Destroy(gameObject);
+            PhotonNetwork.Instantiate("SmallExplosion", transform.position, transform.rotation);
+            if (gameObject != null)
+            {
+                PhotonNetwork.Destroy(gameObject);
+            }
         }
+
     }
 }

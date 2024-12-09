@@ -10,7 +10,7 @@ public class PlayerHit : MonoBehaviour
         if (other.gameObject.tag == "Player")
         {
             lm = other.gameObject.GetComponent<LifeManager>();
-            lm.GetDamage(1);
+            lm.RPC_TakeDamage(1);
         }
-    }
+    }   
 }

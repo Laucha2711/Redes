@@ -13,27 +13,21 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
-        if (PhotonNetwork.IsMasterClient == true)
-        {
-            target = GameObject.Find("Player(Clone)");
-            agent = GetComponent<NavMeshAgent>();
+        target = GameObject.Find("Player(Clone)");
+        agent = GetComponent<NavMeshAgent>();
 
-            if (GM == null)
-            {
-                GameObject GMtemp = GameObject.Find("GM");
-                GM = GMtemp.GetComponent<GameManager>();
-            }
+        if (GM == null)
+        {
+            GameObject GMtemp = GameObject.Find("GM");
+            GM = GMtemp.GetComponent<GameManager>();
         }
     }
 
     private void Update()
     {
-        if (PhotonNetwork.IsMasterClient == true)
+        if (target != null)
         {
-            if (target != null)
-            {
-                agent.SetDestination(target.transform.position);
-            }
+            agent.SetDestination(target.transform.position);
         }
     }
 

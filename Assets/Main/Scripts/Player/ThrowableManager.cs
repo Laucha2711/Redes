@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
-public class ThrowableManager : MonoBehaviour
+public class ThrowableManager : MonoBehaviourPunCallbacks
 {
     [SerializeField]
     private PilaGranada p1 = new PilaGranada();
@@ -22,9 +23,12 @@ public class ThrowableManager : MonoBehaviour
 
     public void SpawnThrowable()
     {
-        //p1.Tope().SetActive(true);
-        GameObject Throwable = Instantiate(throwablePrefab, throwableSpawnPoint.position, throwableSpawnPoint.rotation);
-        Throwable.GetComponent<Rigidbody>().AddForce(throwableSpawnPoint.forward * range, ForceMode.Impulse);
+        if (photonView.IsMine)
+        {
+            //p1.Tope().SetActive(true);
+            GameObject Throwable = PhotonNetwork.Instantiate(throwablePrefab.name.ToString(), throwableSpawnPoint.position, throwableSpawnPoint.rotation);
+            Throwable.GetComponent<Rigidbody>().AddForce(throwableSpawnPoint.forward * range, ForceMode.Impulse);
+        }
     }
 
     private void FixedUpdate()
