@@ -19,7 +19,10 @@ public class Enemy : MonoBehaviour
         if (GM == null)
         {
             GameObject GMtemp = GameObject.Find("GM");
-            GM = GMtemp.GetComponent<GameManager>();
+            if (GMtemp != null)
+            {
+                GM = GMtemp.GetComponent<GameManager>();
+            }
         }
     }
 

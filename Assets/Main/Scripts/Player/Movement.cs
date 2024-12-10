@@ -98,29 +98,28 @@ public class Movement : MonoBehaviourPunCallbacks
             }
         }
     }
-    
+
     private void OnTriggerEnter(Collider other)
     {
         if (PV.IsMine && PhotonNetwork.IsConnected)
         {
             if (other.tag == "Armor")
             {
-                if (lm.currentLife <= 5)
+                if (lm._currentLife <= 5)
                 {
                     Debug.Log("gotArmor");
                     blindaje = other.gameObject;
-                    GotArmor();
-                    Destroy(blindaje.gameObject);
+                    RPC_GotArmor();
+                    PhotonNetwork.Destroy(blindaje.gameObject);
                 }
             }
         }
     }
 
-    public void GotArmor()
+    [PunRPC]
+    public void RPC_GotArmor()
     {
-        if (photonView.IsMine)
-        {
-            lm.currentLife = 6;
-        }
+        lm._currentLife = 6;
+        Debug.LogError(lm._currentLife);
     }
 }

@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
 
     public void WinGame()
     {
-        SceneManager.LoadScene("Menu");
+        SceneManager.LoadScene("ConnectLobby");
         Debug.Log("IWIn");
     }
     public void NextLvl()

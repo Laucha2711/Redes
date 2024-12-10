@@ -11,7 +11,7 @@ public class NextLvl : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
         {
-            GM.NextLvl();
+            GM.WinGame();
         }
     }
 }

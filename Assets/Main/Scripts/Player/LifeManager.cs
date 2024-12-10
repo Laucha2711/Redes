@@ -6,7 +6,9 @@ using Photon.Pun;
 public class LifeManager : MonoBehaviourPunCallbacks
 {
     public int maxLife = 3;
-    public int currentLife;
+
+    [SerializeField]
+    private int currentLife;
 
     [SerializeField]
     private GameManager GM;
@@ -15,11 +17,26 @@ public class LifeManager : MonoBehaviourPunCallbacks
 
     private bool canHit;
 
+    private PhotonView PV;
+
+    public int _currentLife
+    {
+        get
+        {
+            return currentLife;
+        }
+        set
+        {
+            currentLife = value;
+        }
+    }
+
     private void Awake()
     {
         currentLife = maxLife;
         canHit = true;
         GM = FindObjectOfType<GameManager>();
+        PV = GetComponent<PhotonView>();
     }
 
     private void Update()
@@ -39,30 +56,28 @@ public class LifeManager : MonoBehaviourPunCallbacks
         }
     }
 
-    /*public void GetDamage(int _damage)
+    [PunRPC]
+    public void RPC_TakeDamage(int _damage)
     {
-        if (photonView.IsMine)
+        if (canHit)
         {
-            if (canHit)
+            currentLife -= _damage;
+            Debug.LogError(_currentLife);
+            canHit = false;
+            if (currentLife <= 0)
             {
-                currentLife -= _damage;
-                Debug.Log(currentLife);
-                canHit = false;
-                if (currentLife <= 0)
-                {
-                    PlayerDead();
-                }
+                PlayerDead();
             }
         }
     }
-    */
 
-    public void RegenerationLife(int _regeneration)
+    [PunRPC]
+    public void RPC_RegenerationLife(int _regeneration)
     {
-        if (photonView.IsMine)
+        if (PV.IsMine && currentLife <= 2)
         {
             currentLife += _regeneration;
-            Debug.Log(currentLife);
+            Debug.LogError(_currentLife);
         }
     }
 
@@ -71,18 +86,4 @@ public class LifeManager : MonoBehaviourPunCallbacks
         GM.LoseGame();
     }
 
-    [PunRPC]
-    public void RPC_TakeDamage(int _damage)
-    {
-        if (canHit)
-        {
-            currentLife -= _damage;
-            Debug.Log(currentLife);
-            canHit = false;
-            if (currentLife <= 0)
-            {
-                PlayerDead();
-            }
-        }
-    }
 }
