@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.UI;
 
 public class LifeManager : MonoBehaviourPunCallbacks
 {
@@ -18,6 +19,9 @@ public class LifeManager : MonoBehaviourPunCallbacks
     private bool canHit;
 
     private PhotonView PV;
+
+    [SerializeField]
+    public Image currentLifeI;
 
     public int _currentLife
     {
@@ -68,6 +72,7 @@ public class LifeManager : MonoBehaviourPunCallbacks
             {
                 PlayerDead();
             }
+            currentLifeI.fillAmount = (float)currentLife / 3f;
         }
     }
 
