@@ -14,10 +14,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public EnterRoom roomItemPrefab;
     List<EnterRoom> roomItemsList = new List<EnterRoom>();
+    Dictionary<string, RoomInfo> cachedRoomList = new Dictionary<string, RoomInfo>();
     public Transform contentObject;
-
-    public float timeBetweenUpdates = 1.5f;
-    float nextUpdateTime;
 
     public List<PlayerItem> playerItemsList = new List<PlayerItem>();
     public PlayerItem playerItemPrefab;
@@ -48,14 +46,32 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        if (Time.time >= nextUpdateTime)
+        UpdateCachedRoomList(roomList);
+        UpdateRoomList();
+    }
+
+    public override void OnJoinedLobby()
+    {
+        cachedRoomList.Clear();
+        UpdateRoomList();
+    }
+
+    void UpdateCachedRoomList(List<RoomInfo> roomList)
+    {
+        foreach (RoomInfo info in roomList)
         {
-            UpdateRoomList(roomList);
-            nextUpdateTime = Time.time + timeBetweenUpdates;
+            if (info.RemovedFromList)
+            {
+                cachedRoomList.Remove(info.Name);
+            }
+            else
+            {
+                cachedRoomList[info.Name] = info;
+            }
         }
     }
 
-    void UpdateRoomList(List<RoomInfo> list)
+    void UpdateRoomList()
     {
         foreach (EnterRoom item in roomItemsList)
         {
@@ -63,10 +79,17 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         }
         roomItemsList.Clear();
 
-        foreach (RoomInfo room in list)
+        foreach (KeyValuePair<string, RoomInfo> roomEntry in cachedRoomList)
         {
+            RoomInfo room = roomEntry.Value;
+
+            if (!room.IsOpen || (room.MaxPlayers > 0 && room.PlayerCount >= room.MaxPlayers))
+            {
+                continue;
+            }
+
             EnterRoom newRoom = Instantiate(roomItemPrefab, contentObject);
-            newRoom.SetRoomName(room.Name);
+            newRoom.SetRoomName(room.Name, room.PlayerCount, room.MaxPlayers);
             roomItemsList.Add(newRoom);
         }
     }
