@@ -8,13 +8,14 @@ public class Enemy : MonoBehaviour
 {
     private GameObject target;
     private NavMeshAgent agent;
+    private PhotonView PV;
     [SerializeField]
     private GameManager GM;
 
     private void Start()
     {
-        target = GameObject.Find("Player(Clone)");
         agent = GetComponent<NavMeshAgent>();
+        PV = GetComponent<PhotonView>();
 
         if (GM == null)
         {
@@ -24,13 +25,45 @@ public class Enemy : MonoBehaviour
                 GM = GMtemp.GetComponent<GameManager>();
             }
         }
+
+        if (PV.IsMine)
+        {
+            FindNearestPlayer();
+        }
     }
 
     private void Update()
     {
-        if (target != null)
+        if (PV.IsMine)
         {
-            agent.SetDestination(target.transform.position);
+            if (target == null)
+            {
+                FindNearestPlayer();
+            }
+
+            if (target != null)
+            {
+                agent.SetDestination(target.transform.position);
+            }
+        }
+    }
+
+    private void FindNearestPlayer()
+    {
+        float nearestDistance = Mathf.Infinity;
+        target = null;
+
+        foreach (PhotonView view in FindObjectsOfType<PhotonView>())
+        {
+            if (view.gameObject.CompareTag("Player"))
+            {
+                float distance = Vector3.Distance(transform.position, view.transform.position);
+                if (distance < nearestDistance)
+                {
+                    nearestDistance = distance;
+                    target = view.gameObject;
+                }
+            }
         }
     }
 

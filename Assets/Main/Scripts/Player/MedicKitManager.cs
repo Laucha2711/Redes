@@ -25,8 +25,7 @@ public class MedicKitManager : MonoBehaviourPunCallbacks
 
     public void ApplyMedicKit()
     {
-        Debug.LogError("entre");
-        lm.RPC_RegenerationLife(1);
+        lm.photonView.RPC(nameof(LifeManager.RPC_RegenerationLife), RpcTarget.Owner, 1);
     }
 
     private void FixedUpdate()

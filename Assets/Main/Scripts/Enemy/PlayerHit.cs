@@ -10,7 +10,7 @@ public class PlayerHit : MonoBehaviour
         if (other.gameObject.tag == "Player")
         {
             lm = other.gameObject.GetComponent<LifeManager>();
-            lm.RPC_TakeDamage(1);
+            lm.photonView.RPC(nameof(LifeManager.RPC_TakeDamage), RpcTarget.Owner, 1);
         }
     }   
 }

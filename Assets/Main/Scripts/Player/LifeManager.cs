@@ -4,7 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
 
-public class LifeManager : MonoBehaviourPunCallbacks
+public class LifeManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     public int maxLife = 3;
 
@@ -63,26 +63,50 @@ public class LifeManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_TakeDamage(int _damage)
     {
+        if (!PV.IsMine)
+        {
+            return;
+        }
+
         if (canHit)
         {
             currentLife -= _damage;
-            Debug.LogError(_currentLife);
             canHit = false;
             if (currentLife <= 0)
             {
                 PlayerDead();
             }
-            currentLifeI.fillAmount = (float)currentLife / 3f;
+            currentLifeI.fillAmount = (float)currentLife / maxLife;
         }
     }
 
     [PunRPC]
     public void RPC_RegenerationLife(int _regeneration)
     {
-        if (PV.IsMine && currentLife <= 2)
+        if (PV.IsMine && currentLife < maxLife)
         {
             currentLife += _regeneration;
-            Debug.LogError(_currentLife);
+            if (currentLife > maxLife)
+            {
+                currentLife = maxLife;
+            }
+            currentLifeI.fillAmount = (float)currentLife / maxLife;
+        }
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(currentLife);
+        }
+        else
+        {
+            currentLife = (int)stream.ReceiveNext();
+            if (currentLifeI != null)
+            {
+                currentLifeI.fillAmount = (float)currentLife / maxLife;
+            }
         }
     }
 

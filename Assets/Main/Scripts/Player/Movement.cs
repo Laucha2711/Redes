@@ -107,9 +107,8 @@ public class Movement : MonoBehaviourPunCallbacks
             {
                 if (lm._currentLife <= 5)
                 {
-                    Debug.Log("gotArmor");
                     blindaje = other.gameObject;
-                    RPC_GotArmor();
+                    PV.RPC(nameof(RPC_GotArmor), RpcTarget.Owner);
                     PhotonNetwork.Destroy(blindaje.gameObject);
                 }
             }

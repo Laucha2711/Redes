@@ -11,6 +11,11 @@ public class PlayerSpawner : MonoBehaviour
 
     private void Start()
     {
-        PhotonNetwork.Instantiate(playerPrefab.name, spawnPoint.position, spawnPoint.rotation);
+        int playerIndex = PhotonNetwork.LocalPlayer.ActorNumber - 1;
+        int column = playerIndex % 2;
+        int row = playerIndex / 2;
+        Vector3 position = spawnPoint.position + new Vector3(column * 2f, 0f, row * 2f);
+
+        PhotonNetwork.Instantiate(playerPrefab.name, position, spawnPoint.rotation);
     }
 }
