@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class PlayerHit : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class PlayerHit : MonoBehaviour
         if (other.gameObject.tag == "Player")
         {
             lm = other.gameObject.GetComponent<LifeManager>();
-            lm.photonView.RPC(nameof(LifeManager.RPC_TakeDamage), RpcTarget.Owner, 1);
+            lm.photonView.RPC(nameof(LifeManager.RPC_TakeDamage), RpcTarget.All, 1);
         }
     }   
 }

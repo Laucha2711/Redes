@@ -22,9 +22,11 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public Transform playerItemParent;
 
     public GameObject playButton;
+    private PhotonView photonView;
 
     private void Start()
     {
+        photonView = GetComponent<PhotonView>();
         PhotonNetwork.JoinLobby();
     }
 
@@ -159,6 +161,15 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     }
 
     public void OnClickPlayButton()
+    {
+        if (PhotonNetwork.IsMasterClient && photonView != null)
+        {
+            photonView.RPC(nameof(RPC_StartGame), RpcTarget.AllBuffered);
+        }
+    }
+
+    [PunRPC]
+    public void RPC_StartGame()
     {
         PhotonNetwork.LoadLevel("Level1");
     }

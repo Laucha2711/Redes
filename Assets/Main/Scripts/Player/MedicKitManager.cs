@@ -25,7 +25,7 @@ public class MedicKitManager : MonoBehaviourPunCallbacks
 
     public void ApplyMedicKit()
     {
-        lm.photonView.RPC(nameof(LifeManager.RPC_RegenerationLife), RpcTarget.Owner, 1);
+        lm.photonView.RPC(nameof(LifeManager.RPC_RegenerationLife), RpcTarget.All, 1);
     }
 
     private void FixedUpdate()
