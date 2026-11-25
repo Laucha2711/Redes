@@ -89,6 +89,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
         currentPoints = GetCurrentPoints();
+        Debug.Log("master changed: " + newMasterClient.NickName);
         ShowDisconnectMessage("master changed: " + newMasterClient.NickName);
     }
 
