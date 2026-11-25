@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
+using Photon.Realtime;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -16,6 +18,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public GameObject[] spawnItems;
     public float[] spawnItemsChance;
+    public Text disconnectMessage;
 
     private void Awake()
     {
@@ -58,6 +61,26 @@ public class GameManager : MonoBehaviourPunCallbacks
             Cursor.visible = true;
             SceneManager.LoadScene("Lobby");
         }
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        disconnectMessage.text = "player disconnected: " + otherPlayer.NickName;
+        disconnectMessage.gameObject.SetActive(true);
+        StartCoroutine(HideDisconnectMessage());
+    }
+
+    private IEnumerator HideDisconnectMessage()
+    {
+        yield return new WaitForSeconds(3f);
+        disconnectMessage.gameObject.SetActive(false);
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        SceneManager.LoadScene("ConnectLobby");
     }
 
     public void WinGame()
