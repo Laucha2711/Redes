@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviourPunCallbacks
 {
     [SerializeField]
     float TimeToLose;
@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private int PointsToWin = 10;
     private int currentPoints;
+    private bool returnToLobbyAfterDeath;
 
     public GameObject[] spawnItems;
     public float[] spawnItemsChance;
@@ -34,6 +35,29 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene("ConnectLobby");
         Debug.Log("ILose");
+    }
+
+    public void LeaveRoomAfterPlayerDeath()
+    {
+        if (PhotonNetwork.InRoom)
+        {
+            returnToLobbyAfterDeath = true;
+            PhotonNetwork.LeaveRoom();
+        }
+        else
+        {
+            SceneManager.LoadScene("Lobby");
+        }
+    }
+
+    public override void OnLeftRoom()
+    {
+        if (returnToLobbyAfterDeath)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            SceneManager.LoadScene("Lobby");
+        }
     }
 
     public void WinGame()

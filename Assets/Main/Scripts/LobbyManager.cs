@@ -27,7 +27,10 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     private void Start()
     {
         photonView = GetComponent<PhotonView>();
-        PhotonNetwork.JoinLobby();
+        if (PhotonNetwork.IsConnectedAndReady)
+        {
+            PhotonNetwork.JoinLobby();
+        }
     }
 
     public void OnClickCreate()

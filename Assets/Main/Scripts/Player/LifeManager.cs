@@ -112,7 +112,7 @@ public class LifeManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private void PlayerDead()
     {
-        GM.LoseGame();
+        GM.LeaveRoomAfterPlayerDeath();
     }
 
 }
