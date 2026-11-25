@@ -5,9 +5,12 @@ using UnityEngine.SceneManagement;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.UI;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
+    private const string CurrentPointsProperty = "currentPoints";
+
     [SerializeField]
     float TimeToLose;
 
@@ -19,10 +22,24 @@ public class GameManager : MonoBehaviourPunCallbacks
     public GameObject[] spawnItems;
     public float[] spawnItemsChance;
     public Text disconnectMessage;
+    private Coroutine hideDisconnectMessageCoroutine;
 
     private void Awake()
     {
-        currentPoints = 0;
+        if (PhotonNetwork.InRoom)
+        {
+            if (PhotonNetwork.IsMasterClient &&
+                !PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey(CurrentPointsProperty))
+            {
+                SetCurrentPoints(0);
+            }
+
+            currentPoints = GetCurrentPoints();
+        }
+        else
+        {
+            currentPoints = 0;
+        }
     }
 
     private void FixedUpdate()
@@ -66,16 +83,65 @@ public class GameManager : MonoBehaviourPunCallbacks
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         Debug.Log("player disconnected: " + otherPlayer.NickName);
-        disconnectMessage.text = "player disconnected: " + otherPlayer.NickName;
+        ShowDisconnectMessage("player disconnected: " + otherPlayer.NickName);
+    }
+
+    public override void OnMasterClientSwitched(Player newMasterClient)
+    {
+        currentPoints = GetCurrentPoints();
+        ShowDisconnectMessage("master changed: " + newMasterClient.NickName);
+    }
+
+    public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
+    {
+        if (propertiesThatChanged.ContainsKey(CurrentPointsProperty))
+        {
+            currentPoints = (int)propertiesThatChanged[CurrentPointsProperty];
+        }
+    }
+
+    private int GetCurrentPoints()
+    {
+        if (PhotonNetwork.InRoom &&
+            PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey(CurrentPointsProperty))
+        {
+            return (int)PhotonNetwork.CurrentRoom.CustomProperties[CurrentPointsProperty];
+        }
+
+        return currentPoints;
+    }
+
+    private bool SetCurrentPoints(int points)
+    {
+        if (PhotonNetwork.CurrentRoom.SetCustomProperties(
+            new Hashtable { { CurrentPointsProperty, points } }))
+        {
+            return true;
+        }
+
+        Debug.LogError("could not sync game points");
+        return false;
+    }
+
+    private void ShowDisconnectMessage(string message)
+    {
+        disconnectMessage.text = message;
         disconnectMessage.transform.root.gameObject.SetActive(true);
         disconnectMessage.gameObject.SetActive(true);
-        StartCoroutine(HideDisconnectMessage());
+
+        if (hideDisconnectMessageCoroutine != null)
+        {
+            StopCoroutine(hideDisconnectMessageCoroutine);
+        }
+
+        hideDisconnectMessageCoroutine = StartCoroutine(HideDisconnectMessage());
     }
 
     private IEnumerator HideDisconnectMessage()
     {
         yield return new WaitForSeconds(3f);
         disconnectMessage.transform.root.gameObject.SetActive(false);
+        hideDisconnectMessageCoroutine = null;
     }
 
     public override void OnDisconnected(DisconnectCause cause)
@@ -99,7 +165,19 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void PointsUp()
     {
+        if (!PhotonNetwork.InRoom || !PhotonNetwork.IsMasterClient)
+        {
+            return;
+        }
+
+        currentPoints = GetCurrentPoints();
         currentPoints++;
+        if (!SetCurrentPoints(currentPoints))
+        {
+            currentPoints--;
+            return;
+        }
+
         if (currentPoints >= PointsToWin)
         {
             WinGame();
