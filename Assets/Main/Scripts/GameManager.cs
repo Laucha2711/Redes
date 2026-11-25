@@ -65,6 +65,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
+        Debug.Log("player disconnected: " + otherPlayer.NickName);
         disconnectMessage.text = "player disconnected: " + otherPlayer.NickName;
         disconnectMessage.gameObject.SetActive(true);
         StartCoroutine(HideDisconnectMessage());

@@ -28,7 +28,7 @@ public class ConnectToServer : MonoBehaviourPunCallbacks
 
     public override void OnDisconnected(DisconnectCause cause)
     {
-        buttonText.text = "connection failed, try again";
+        buttonText.text = "connection failed";
         Debug.LogError("photon connection failed: " + cause);
     }
 }
