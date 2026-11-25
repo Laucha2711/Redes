@@ -11,6 +11,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public GameObject lobbyPanel;
     public GameObject roomPanel;
     public Text roomName;
+    public Text connectionStatus;
 
     public EnterRoom roomItemPrefab;
     List<EnterRoom> roomItemsList = new List<EnterRoom>();
@@ -24,12 +25,22 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public GameObject playButton;
     private PhotonView photonView;
 
+    private void SetLobbyStatus(string status)
+    {
+        connectionStatus.text = "Lobby status: " + status;
+    }
+
     private void Start()
     {
         photonView = GetComponent<PhotonView>();
         if (PhotonNetwork.IsConnectedAndReady)
         {
+            SetLobbyStatus("joining lobby...");
             PhotonNetwork.JoinLobby();
+        }
+        else
+        {
+            SetLobbyStatus("connecting...");
         }
     }
 
@@ -37,7 +48,12 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         if (roomInputField.text.Length >= 1)
         {
+            SetLobbyStatus("creating room...");
             PhotonNetwork.CreateRoom(roomInputField.text, new RoomOptions() { MaxPlayers = 2 });
+        }
+        else
+        {
+            SetLobbyStatus("enter room name");
         }
     }
 
@@ -57,6 +73,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedLobby()
     {
+        SetLobbyStatus("ready to join or create");
         cachedRoomList.Clear();
         UpdateRoomList();
     }
@@ -101,6 +118,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public void JoinRoom(string roomName)
     {
+        SetLobbyStatus("joining room...");
         PhotonNetwork.JoinRoom(roomName);
     }
 
@@ -113,10 +131,12 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         roomPanel.SetActive(false);
         lobbyPanel.SetActive(true);
+        SetLobbyStatus("ready to join or create");
     }
 
     public override void OnConnectedToMaster()
     {
+        SetLobbyStatus("joining lobby...");
         PhotonNetwork.JoinLobby();
     }
 
