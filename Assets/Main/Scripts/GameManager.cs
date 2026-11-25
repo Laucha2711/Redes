@@ -67,6 +67,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("player disconnected: " + otherPlayer.NickName);
         disconnectMessage.text = "player disconnected: " + otherPlayer.NickName;
+        disconnectMessage.transform.root.gameObject.SetActive(true);
         disconnectMessage.gameObject.SetActive(true);
         StartCoroutine(HideDisconnectMessage());
     }
@@ -74,7 +75,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private IEnumerator HideDisconnectMessage()
     {
         yield return new WaitForSeconds(3f);
-        disconnectMessage.gameObject.SetActive(false);
+        disconnectMessage.transform.root.gameObject.SetActive(false);
     }
 
     public override void OnDisconnected(DisconnectCause cause)
