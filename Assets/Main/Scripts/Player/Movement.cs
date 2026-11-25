@@ -33,6 +33,12 @@ public class Movement : MonoBehaviourPunCallbacks
     void Start()
     {
         PV = GetComponent<PhotonView>();
+        Canvas playerCanvas = GetComponentInChildren<Canvas>();
+        if (playerCanvas != null)
+        {
+            playerCanvas.enabled = PV.IsMine;
+        }
+
         if (PV.IsMine && PhotonNetwork.IsConnected)
         {
             characterController = GetComponent<CharacterController>();
