@@ -22,10 +22,14 @@ public class GameManager : MonoBehaviourPunCallbacks
     public GameObject[] spawnItems;
     public float[] spawnItemsChance;
     public Text disconnectMessage;
-    private Coroutine hideDisconnectMessageCoroutine;
+    public Text masterClientMessage;
+    private Coroutine hideMessagesCoroutine;
 
     private void Awake()
     {
+        disconnectMessage.gameObject.SetActive(false);
+        masterClientMessage.gameObject.SetActive(false);
+
         if (PhotonNetwork.InRoom)
         {
             if (PhotonNetwork.IsMasterClient &&
@@ -83,14 +87,14 @@ public class GameManager : MonoBehaviourPunCallbacks
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         Debug.Log("player disconnected: " + otherPlayer.NickName);
-        ShowDisconnectMessage("player disconnected: " + otherPlayer.NickName);
+        ShowMessage(disconnectMessage, "player disconnected: " + otherPlayer.NickName);
     }
 
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
         currentPoints = GetCurrentPoints();
         Debug.Log("master changed: " + newMasterClient.NickName);
-        ShowDisconnectMessage("master changed: " + newMasterClient.NickName);
+        ShowMessage(masterClientMessage, "master changed: " + newMasterClient.NickName);
     }
 
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
@@ -124,25 +128,27 @@ public class GameManager : MonoBehaviourPunCallbacks
         return false;
     }
 
-    private void ShowDisconnectMessage(string message)
+    private void ShowMessage(Text message, string text)
     {
-        disconnectMessage.text = message;
-        disconnectMessage.transform.root.gameObject.SetActive(true);
-        disconnectMessage.gameObject.SetActive(true);
+        message.text = text;
+        message.transform.root.gameObject.SetActive(true);
+        message.gameObject.SetActive(true);
 
-        if (hideDisconnectMessageCoroutine != null)
+        if (hideMessagesCoroutine != null)
         {
-            StopCoroutine(hideDisconnectMessageCoroutine);
+            StopCoroutine(hideMessagesCoroutine);
         }
 
-        hideDisconnectMessageCoroutine = StartCoroutine(HideDisconnectMessage());
+        hideMessagesCoroutine = StartCoroutine(HideMessages());
     }
 
-    private IEnumerator HideDisconnectMessage()
+    private IEnumerator HideMessages()
     {
         yield return new WaitForSeconds(3f);
+        disconnectMessage.gameObject.SetActive(false);
+        masterClientMessage.gameObject.SetActive(false);
         disconnectMessage.transform.root.gameObject.SetActive(false);
-        hideDisconnectMessageCoroutine = null;
+        hideMessagesCoroutine = null;
     }
 
     public override void OnDisconnected(DisconnectCause cause)
