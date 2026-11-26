@@ -39,7 +39,7 @@ public class Movement : MonoBehaviourPunCallbacks
             playerCanvas.enabled = PV.IsMine;
         }
 
-        if (PV.IsMine && PhotonNetwork.IsConnected)
+        if (PV.IsMine && PhotonNetwork.IsConnected && GameManager.GameStarted)
         {
             characterController = GetComponent<CharacterController>();
             Cursor.lockState = CursorLockMode.Locked;

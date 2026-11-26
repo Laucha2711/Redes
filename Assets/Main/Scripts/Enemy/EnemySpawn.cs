@@ -13,7 +13,7 @@ public class EnemySpawn : MonoBehaviour
 
     private void Update()
     {
-        if (PhotonNetwork.IsMasterClient == true)
+        if (PhotonNetwork.IsMasterClient == true && GameManager.GameStarted)
         {
             time = time - 1 * Time.deltaTime;
 

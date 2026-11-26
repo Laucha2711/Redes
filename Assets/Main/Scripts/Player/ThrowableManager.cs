@@ -23,7 +23,7 @@ public class ThrowableManager : MonoBehaviourPunCallbacks
 
     public void SpawnThrowable()
     {
-        if (photonView.IsMine)
+        if (photonView.IsMine && GameManager.GameStarted)
         {
             //p1.Tope().SetActive(true);
             GameObject Throwable = PhotonNetwork.Instantiate(throwablePrefab.name.ToString(), throwableSpawnPoint.position, throwableSpawnPoint.rotation);
@@ -33,7 +33,7 @@ public class ThrowableManager : MonoBehaviourPunCallbacks
 
     private void FixedUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.G) && !p1.PilaVacia())
+        if (GameManager.GameStarted && Input.GetKeyDown(KeyCode.G) && !p1.PilaVacia())
         {
             SpawnThrowable();
             p1.Desapilar();

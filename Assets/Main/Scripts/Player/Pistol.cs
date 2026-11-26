@@ -11,7 +11,7 @@ public class Pistol : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        if (photonView.IsMine)
+        if (photonView.IsMine && GameManager.GameStarted)
         {
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {

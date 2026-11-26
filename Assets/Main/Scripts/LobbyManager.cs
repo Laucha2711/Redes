@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.UI;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
@@ -187,7 +188,21 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsMasterClient && photonView != null)
         {
-            photonView.RPC(nameof(RPC_StartGame), RpcTarget.AllBuffered);
+            Hashtable gameProperties = new Hashtable
+            {
+                { GameManager.GameStartRoundProperty, PhotonNetwork.ServerTimestamp },
+                { GameManager.GameStartTimestampProperty, null },
+                { GameManager.CurrentPointsProperty, 0 }
+            };
+
+            if (PhotonNetwork.CurrentRoom.SetCustomProperties(gameProperties))
+            {
+                photonView.RPC(nameof(RPC_StartGame), RpcTarget.AllBuffered);
+            }
+            else
+            {
+                Debug.LogError("could not prepare game start");
+            }
         }
     }
 

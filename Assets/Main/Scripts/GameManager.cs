@@ -9,7 +9,11 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
-    private const string CurrentPointsProperty = "currentPoints";
+    public const string CurrentPointsProperty = "currentPoints";
+    public const string GameStartRoundProperty = "gameStartRound";
+    public const string GameStartTimestampProperty = "gameStartTimestamp";
+    private const string ReadyRoundProperty = "readyRound";
+    private const int StartDelayMilliseconds = 3000;
 
     [SerializeField]
     float TimeToLose;
@@ -23,12 +27,22 @@ public class GameManager : MonoBehaviourPunCallbacks
     public float[] spawnItemsChance;
     public Text disconnectMessage;
     public Text masterClientMessage;
+    public Text gameStartCountdown;
     private Coroutine hideMessagesCoroutine;
+    private bool localPlayerSpawned;
+    private int reportedReadyRound = int.MinValue;
+    private bool hasGameStartTime;
+    private int gameStartTimestamp;
+
+    public static bool GameStarted { get; private set; }
 
     private void Awake()
     {
+        GameStarted = false;
         disconnectMessage.gameObject.SetActive(false);
         masterClientMessage.gameObject.SetActive(false);
+        gameStartCountdown.gameObject.SetActive(true);
+        gameStartCountdown.text = "waiting for players...";
 
         if (PhotonNetwork.InRoom)
         {
@@ -39,6 +53,13 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
 
             currentPoints = GetCurrentPoints();
+            object startTimestamp;
+            if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue(
+                GameStartTimestampProperty, out startTimestamp) && startTimestamp is int)
+            {
+                gameStartTimestamp = (int)startTimestamp;
+                hasGameStartTime = true;
+            }
         }
         else
         {
@@ -48,12 +69,47 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void FixedUpdate()
     {
+        if (!GameStarted)
+        {
+            return;
+        }
+
         TimeToLose = TimeToLose - 1 * Time.deltaTime;
 
         if (TimeToLose <= 0)
         {
             LoseGame();
         }
+    }
+
+    private void Update()
+    {
+        if (!PhotonNetwork.InRoom || GameStarted)
+        {
+            return;
+        }
+
+        if (!hasGameStartTime)
+        {
+            gameStartCountdown.text = "waiting for players...";
+            return;
+        }
+
+        int timeRemaining = unchecked(gameStartTimestamp - PhotonNetwork.ServerTimestamp);
+        if (timeRemaining > 0)
+        {
+            gameStartCountdown.text = "starting in: " + Mathf.CeilToInt(timeRemaining / 1000f);
+            return;
+        }
+
+        GameStarted = true;
+        gameStartCountdown.gameObject.SetActive(false);
+    }
+
+    public void ReportPlayerSpawned()
+    {
+        localPlayerSpawned = true;
+        TryReportPlayerReady();
     }
     public void LoseGame()
     {
@@ -88,6 +144,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("player disconnected: " + otherPlayer.NickName);
         ShowMessage(disconnectMessage, "player disconnected: " + otherPlayer.NickName);
+        TryStartGame();
     }
 
     public override void OnMasterClientSwitched(Player newMasterClient)
@@ -95,6 +152,15 @@ public class GameManager : MonoBehaviourPunCallbacks
         currentPoints = GetCurrentPoints();
         Debug.Log("master changed: " + newMasterClient.NickName);
         ShowMessage(masterClientMessage, "master changed: " + newMasterClient.NickName);
+        TryStartGame();
+    }
+
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        if (changedProps.ContainsKey(ReadyRoundProperty))
+        {
+            TryStartGame();
+        }
     }
 
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
@@ -102,6 +168,76 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (propertiesThatChanged.ContainsKey(CurrentPointsProperty))
         {
             currentPoints = (int)propertiesThatChanged[CurrentPointsProperty];
+        }
+
+        if (propertiesThatChanged.ContainsKey(GameStartRoundProperty))
+        {
+            TryReportPlayerReady();
+            TryStartGame();
+        }
+
+        if (propertiesThatChanged.ContainsKey(GameStartTimestampProperty))
+        {
+            object startTimestamp = propertiesThatChanged[GameStartTimestampProperty];
+            if (startTimestamp is int)
+            {
+                gameStartTimestamp = (int)startTimestamp;
+                hasGameStartTime = true;
+            }
+        }
+    }
+
+    private void TryReportPlayerReady()
+    {
+        if (!localPlayerSpawned || !PhotonNetwork.InRoom ||
+            !PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey(GameStartRoundProperty))
+        {
+            return;
+        }
+
+        int round = (int)PhotonNetwork.CurrentRoom.CustomProperties[GameStartRoundProperty];
+        if (round == reportedReadyRound)
+        {
+            return;
+        }
+
+        if (PhotonNetwork.LocalPlayer.SetCustomProperties(
+            new Hashtable { { ReadyRoundProperty, round } }))
+        {
+            reportedReadyRound = round;
+            TryStartGame();
+        }
+        else
+        {
+            Debug.LogError("could not send player ready state");
+        }
+    }
+
+    private void TryStartGame()
+    {
+        if (!PhotonNetwork.InRoom || !PhotonNetwork.IsMasterClient ||
+            !PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey(GameStartRoundProperty) ||
+            PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey(GameStartTimestampProperty))
+        {
+            return;
+        }
+
+        int round = (int)PhotonNetwork.CurrentRoom.CustomProperties[GameStartRoundProperty];
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            object readyRound;
+            if (!player.CustomProperties.TryGetValue(ReadyRoundProperty, out readyRound) ||
+                !(readyRound is int) || (int)readyRound != round)
+            {
+                return;
+            }
+        }
+
+        int startTimestamp = unchecked(PhotonNetwork.ServerTimestamp + StartDelayMilliseconds);
+        if (!PhotonNetwork.CurrentRoom.SetCustomProperties(
+            new Hashtable { { GameStartTimestampProperty, startTimestamp } }))
+        {
+            Debug.LogError("could not synchronize game start");
         }
     }
 

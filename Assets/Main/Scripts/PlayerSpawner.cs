@@ -17,5 +17,15 @@ public class PlayerSpawner : MonoBehaviour
         Vector3 position = spawnPoint.position + new Vector3(column * 2f, 0f, row * 2f);
 
         PhotonNetwork.Instantiate(playerPrefab.name, position, spawnPoint.rotation);
+
+        GameManager gameManager = FindObjectOfType<GameManager>();
+        if (gameManager != null)
+        {
+            gameManager.ReportPlayerSpawned();
+        }
+        else
+        {
+            Debug.LogError("game manager not found");
+        }
     }
 }
