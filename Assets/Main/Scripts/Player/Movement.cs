@@ -39,7 +39,7 @@ public class Movement : MonoBehaviourPunCallbacks
             playerCanvas.enabled = PV.IsMine;
         }
 
-        if (PV.IsMine && PhotonNetwork.IsConnected && GameManager.GameStarted)
+        if (PV.IsMine && PhotonNetwork.IsConnected)
         {
             characterController = GetComponent<CharacterController>();
             Cursor.lockState = CursorLockMode.Locked;
@@ -54,7 +54,7 @@ public class Movement : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        if (PV.IsMine && PhotonNetwork.IsConnected)
+        if (PV.IsMine && PhotonNetwork.IsConnected && GameManager.GameStarted)
         {
             Vector3 forward = transform.TransformDirection(Vector3.forward);
             Vector3 right = transform.TransformDirection(Vector3.right);
