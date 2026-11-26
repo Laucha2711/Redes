@@ -8,7 +8,7 @@ public class PickUp : MonoBehaviourPun
 {
     private const int ThrowableLayer = 6;
     private const int MedicKitLayer = 7;
-    private const float ClaimGracePeriod = 2f;
+    private const float ClaimGracePeriod = 0.2f;
 
     private class PickupClaim
     {
