@@ -94,6 +94,26 @@ public class LifeManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
+    [PunRPC]
+    public void RPC_GotArmor()
+    {
+        ApplyArmor();
+    }
+
+    public void ApplyArmor()
+    {
+        if (!PV.IsMine)
+        {
+            return;
+        }
+
+        currentLife = 6;
+        if (currentLifeI != null)
+        {
+            currentLifeI.fillAmount = (float)currentLife / maxLife;
+        }
+    }
+
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)

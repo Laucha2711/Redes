@@ -21,14 +21,11 @@ public class Movement : MonoBehaviourPunCallbacks
     private Vector3 moveDirection = Vector3.zero;
     private float rotationX = 0;
     private CharacterController characterController;
-    private LifeManager lm;
 
     private PhotonView PV;
 
 
     private bool canMove = true;
-
-    private GameObject blindaje;
 
     void Start()
     {
@@ -44,7 +41,6 @@ public class Movement : MonoBehaviourPunCallbacks
             characterController = GetComponent<CharacterController>();
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-            lm = gameObject.GetComponent<LifeManager>();
         }
         if (!PV.IsMine)
         {
@@ -105,26 +101,4 @@ public class Movement : MonoBehaviourPunCallbacks
         }
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (PV.IsMine && PhotonNetwork.IsConnected)
-        {
-            if (other.tag == "Armor")
-            {
-                if (lm._currentLife <= 5)
-                {
-                    blindaje = other.gameObject;
-                    PV.RPC(nameof(RPC_GotArmor), RpcTarget.All);
-                    PhotonNetwork.Destroy(blindaje.gameObject);
-                }
-            }
-        }
-    }
-
-    [PunRPC]
-    public void RPC_GotArmor()
-    {
-        lm._currentLife = 6;
-        Debug.LogError(lm._currentLife);
-    }
 }
